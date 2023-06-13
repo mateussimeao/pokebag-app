@@ -32,7 +32,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     Context context;
     ArrayList<Pokemon> listaPokemons;
-
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    DocumentReference docRef = db.collection("Treinadores").document(userId);
 
 
     public MyAdapter(Context context, ArrayList<Pokemon> listaPokemons) {
@@ -56,7 +58,31 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         Glide.with(context)
                 .load(pokemon.getSprite())
                 .into(holder.sprite);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Object> updates = new HashMap<>();
 
+                String currentPokemon = pokemon.getName();
+                updates.put("pokemons", FieldValue.arrayRemove(pokemon));
+                docRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("Firestore333", "Elemento removido do array com sucesso");
+                        Snackbar snackbar = Snackbar.make(v,currentPokemon+" removido", Snackbar.LENGTH_SHORT);
+                        snackbar.show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Firestore333", "Erro ao remover elemento do array" + e.toString(), e);
+                        Snackbar snackbar = Snackbar.make(v,"Erro ao remover pokemon", Snackbar.LENGTH_SHORT);
+                        snackbar.show();
+                    }
+                });
+
+            }
+        });
 
     }
 

@@ -64,6 +64,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null) {
+            Intent intent = new Intent(MainActivity.this, PerfilUsuario.class);
+            startActivity(intent);
+            finish();
+        }
+    }
 
     private void startComponents() {
         editTextLogin = findViewById(R.id.editTextLogin);
