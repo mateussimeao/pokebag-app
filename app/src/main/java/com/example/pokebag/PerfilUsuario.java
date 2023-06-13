@@ -43,11 +43,40 @@ public class PerfilUsuario extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        button_sair.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(PerfilUsuario.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
 
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        int index = user.indexOf('@');
+        String showUser = user.substring(0, index);
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DocumentReference docRef = db.collection("Treinadores").document(userId);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value != null) {
+                    text_name.setText(value.getString("nome"));
+                    text_user.setText(showUser);
+                }
+            }
+        });
+
+
+    }
 
     private void startComponents() {
         text_user = findViewById(R.id.text_user);
