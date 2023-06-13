@@ -1,5 +1,6 @@
 package com.example.pokebag;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,6 +11,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.pokebag.api.PokemonService;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -22,21 +29,29 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
     private EditText editTextLogin, editTextSenha;
     private Button button_login;
-    private TextView text_tela_cadastro;
-    private Retrofit retrofit;
+    private TextView text_tela_cadastro, mainTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
         startComponents();
 
         button_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String username = editTextLogin.getText().toString();
-                String senha = editTextSenha.getText().toString();
-                //Intent intent = new Intent(MainActivity.this, TelaCadastro.class);
+                if(username.isEmpty()) {
+                    Snackbar snackbar = Snackbar.make(view,"Preencha todos os campos", Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }
+                else{
+                    autenticar(view);
+                }
+
+
+                //Intent intent = new Intent(MainActivity.this, ProcurarPokemon.class);
                 //startActivity(intent);
             }
         });
@@ -49,45 +64,39 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void startComponents() {
         editTextLogin = findViewById(R.id.editTextLogin);
         editTextSenha = findViewById(R.id.editTextSenha);
         button_login = findViewById(R.id.button_login);
         text_tela_cadastro = findViewById(R.id.text_tela_cadastro);
+        mainTitle = findViewById(R.id.mainTitle);
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://viacep.com.br/ws/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
     }
 
-    private void RecuperarPokemonObject() {
-        PokemonService pokemonService = retrofit.create(PokemonService.class);
-        Call<JsonObject> call = pokemonService.RecuperarPokeObject("squirtle");
-        call.enqueue(new Callback<JsonObject>() {
+    private void autenticar(View view) {
+        String username = editTextLogin.getText().toString();
+        String senha = editTextSenha.getText().toString();
+
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(username+"@mail.com",senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if(response.isSuccessful()) {
-                    JsonObject jsonObject = response.body();
-                    JsonArray typesArray = jsonObject.getAsJsonArray("types");
-                    JsonObject typeObject = typesArray.get(0).getAsJsonObject(); // Acessando o primeiro elemento do array
-                    JsonObject typeNameObject = typeObject.getAsJsonObject("type");
-                    String typeName = typeNameObject.get("name").getAsString();
-
-                    JsonObject speciesJson = jsonObject.getAsJsonObject("species");
-                    String pokemonName = speciesJson.get("name").getAsString();
-
-                    JsonObject spritesJson = jsonObject.getAsJsonObject("sprites");
-                    String spriteLink = spritesJson.get("front_default").getAsString();
-
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Intent intent = new Intent(MainActivity.this, PerfilUsuario.class);
+                    startActivity(intent);
+                    finish();
 
                 }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                else {
+                    try {
+                        throw task.getException();
+                    } catch(Exception e){
+                        Snackbar snackbar = Snackbar.make(view,"erro: "+ e.toString(), Snackbar.LENGTH_SHORT);
+                        snackbar.show();
+                    }
+                }
             }
         });
     }
+
 }

@@ -5,6 +5,12 @@ public class Pokemon {
     private String type;
     private String sprite;
 
+    public Pokemon(String name, String type, String sprite) {
+        this.name = name;
+        this.type = type;
+        this.sprite = sprite;
+    }
+
     public String getName() {
         return name;
     }

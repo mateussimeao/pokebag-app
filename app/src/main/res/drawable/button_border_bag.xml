@@ -9,5 +9,5 @@
             <corners android:radius="16dp" />
         </shape>
     </item>
-    <item android:drawable="@drawable/search_pic" />
+    <item android:drawable="@drawable/ic_bag" />
 </layer-list>

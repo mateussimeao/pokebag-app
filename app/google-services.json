@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "523748002859",
+    "project_id": "pokebag-app",
+    "storage_bucket": "pokebag-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:523748002859:android:d2495ad57ce5a06c3f6e6e",
+        "android_client_info": {
+          "package_name": "com.example.pokebag"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "523748002859-k8fm9e0mvl73ijthqh8kotl7ma539k3u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4mdK8n-m55vtSyoS5BY8oERptBXLq52c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "523748002859-k8fm9e0mvl73ijthqh8kotl7ma539k3u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
